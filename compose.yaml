@@ -1,0 +1,54 @@
+services:
+  web:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+
+    expose:
+      - "1337"
+
+    ports:
+      - "1337:1337"
+
+    env_file:
+      - .env
+
+    networks:
+      - app_net
+
+    hostname: mydocker
+
+  redis:
+    image: "redis:alpine"
+
+    expose:
+      - "6379"
+
+    env_file:
+      - .env
+
+    networks:
+      - app_net
+
+  mysql:
+    image: "mysql:5.7"
+
+    expose:
+      - "3306"
+    command: --init-file /data/application/init.sql
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/data/application/init.sql
+
+    env_file:
+      - .env
+
+    networks:
+      - app_net
+
+volumes:
+  mysql_data:
+
+networks:
+  app_net:
